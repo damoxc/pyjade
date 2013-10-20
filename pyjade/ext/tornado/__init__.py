@@ -26,6 +26,9 @@ class Compiler(_Compiler):
     #     else:
     #       self.buffer('{{%s(%s)}}'%(mixin.name,mixin.args))
 
+    def interpolate(self,text):
+        return self._interpolate(text,lambda x:'{{%s(%s)}}' % (ESCAPE_FUNC, x))
+
     def visitMixin(self,mixin):
         raise CurrentlyNotSupported('mixin')
 
@@ -35,6 +38,7 @@ class Compiler(_Compiler):
     def visitCode(self,code):
         if code.buffer:
             val = code.val.lstrip()
+            val = self.var_processor(val)
             self.buf.append((('{{%s(%%s)}}'%ESCAPE_FUNC) if code.escape else '{{%s}}')%val)
         else:
             self.buf.append('{%% %s %%}'%code.val)

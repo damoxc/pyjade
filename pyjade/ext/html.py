@@ -3,7 +3,7 @@
 import contextlib
 
 import pyjade
-from pyjade.runtime import is_mapping, iteration
+from pyjade.runtime import is_mapping, iteration, escape
 import six
 
 def process_param(key, value, terse=False):
@@ -83,7 +83,7 @@ class HTMLCompiler(pyjade.compiler.Compiler):
             self.mixins[mixin.name](self, mixin.args)
 
     def visitAssignment(self, assignment):
-        self.global_context[assignment.name] = eval(assignment.val)
+        self.global_context[assignment.name] = self._do_eval(assignment.val)
 
     def visitConditional(self, conditional):
         if not conditional.sentence:
@@ -99,6 +99,7 @@ class HTMLCompiler(pyjade.compiler.Compiler):
     def visitCode(self, code):
         if code.buffer:
             val = code.val.lstrip()
+            val = self.var_processor(val)
             val = self._do_eval(val)
             if code.escape:
                 val = str(val).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
@@ -135,9 +136,10 @@ class HTMLCompiler(pyjade.compiler.Compiler):
                     classes.append(value)
             else:
                 value = self._get_value(attr)
-
-                if value not in (None,False):
-                    params.append((attr['name'], value))
+                if value is True:
+                    params.append((attr['name'], True))
+                elif value not in (None,False):
+                    params.append((attr['name'], escape(value)))
         if classes:
             classes = [six.text_type(c) for c in classes]
             params.append(('class', " ".join(classes)))
