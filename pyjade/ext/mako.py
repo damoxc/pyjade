@@ -52,7 +52,7 @@ class Compiler(_Compiler):
     def visitInclude(self,node):
         path = self.format_path(node.path)
         self.buffer('<%%include file="%s"/>'%(path))
-
+        self.buffer('<%%namespace file="%s" import="*"/>'%(path))
 
     def visitConditional(self,conditional):
         TYPE_CODE = {
@@ -96,7 +96,7 @@ class Compiler(_Compiler):
         self.buf.append('\\\n% endfor\n')
 
     def attributes(self,attrs):
-        return "${%s(%s, undefined=Undefined)}"%(ATTRS_FUNC,attrs)
+        return "${%s(%s, undefined=Undefined)|n}"%(ATTRS_FUNC,attrs)
 
 
 
