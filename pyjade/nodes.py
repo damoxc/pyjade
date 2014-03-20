@@ -163,9 +163,13 @@ class Tag(Node):
 		return attrs+classes
 
 class Text(Node):
+	parent = None
+
 	def __init__(self, line=None):
 		self.nodes = []
 		if isinstance(line,six.string_types): self.append(line)
 
 	def append(self,node):
 		return self.nodes.append(node)
+
+class String(Text): pass
