@@ -54,7 +54,6 @@ class Compiler(_Compiler):
         self.buffer('<%%include file="%s"/>'%(path))
         self.buffer('<%%namespace file="%s" import="*"/>'%(path))
 
-
     def visitConditional(self,conditional):
         TYPE_CODE = {
             'if': lambda x: 'if %s'%x,
