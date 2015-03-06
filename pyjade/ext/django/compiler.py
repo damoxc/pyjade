@@ -59,8 +59,11 @@ class Compiler(_Compiler):
         return "{%% __pyjade_attrs %s %%}"%attrs
 
 
-from django import template
-template.add_to_builtins('pyjade.ext.django.templatetags')
+try:
+    from django.template.base import add_to_builtins
+except ImportError: # Django < 1.8
+    from django.template import add_to_builtins
+add_to_builtins('pyjade.ext.django.templatetags')
 
 from django.utils.translation import trans_real
 
@@ -72,7 +75,10 @@ except ImportError:
 def decorate_templatize(func):
     def templatize(src, origin=None):
         src = to_text(src, settings.FILE_CHARSET)
-        html = process(src,compiler=Compiler)
+        if origin.endswith(".jade"):
+            html = process(src,compiler=Compiler)
+        else:
+            html = src
         return func(html, origin)
 
     return templatize

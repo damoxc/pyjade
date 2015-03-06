@@ -5,6 +5,7 @@ import contextlib
 import pyjade
 from pyjade.runtime import is_mapping, iteration, escape
 import six
+import os
 
 def process_param(key, value, terse=False):
     if terse:
@@ -32,7 +33,7 @@ def local_context_manager(compiler, local_context):
     compiler.local_context = old_local_context
 
 
-class HTMLCompiler(pyjade.compiler.Compiler):
+class Compiler(pyjade.compiler.Compiler):
     global_context = dict()
     local_context = dict()
     mixins = dict()
@@ -71,7 +72,16 @@ class HTMLCompiler(pyjade.compiler.Compiler):
         return self._interpolate(text, lambda x: str(self._do_eval(x)))
 
     def visitInclude(self, node):
-        raise pyjade.exceptions.CurrentlyNotSupported()
+        if os.path.exists(node.path):
+            src = open(node.path, 'r').read()
+        elif os.path.exists("%s.jade" % node.path):
+            src = open("%s.jade" % node.path, 'r').read()
+        else:
+            raise Exception("Include path doesn't exists")
+
+        parser = pyjade.parser.Parser(src)
+        block = parser.parse()
+        self.visit(block)
 
     def visitExtends(self, node):
         raise pyjade.exceptions.CurrentlyNotSupported()
@@ -146,8 +156,10 @@ class HTMLCompiler(pyjade.compiler.Compiler):
         if params:
             self.buf.append(" "+" ".join([process_param(k, v, self.terse) for (k,v) in params]))
 
+HTMLCompiler = Compiler
+
 def process_jade(src):
     parser = pyjade.parser.Parser(src)
     block = parser.parse()
-    compiler = HTMLCompiler(block, pretty=True)
+    compiler = Compiler(block, pretty=True)
     return compiler.compile()
