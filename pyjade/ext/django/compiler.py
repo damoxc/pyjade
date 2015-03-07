@@ -9,7 +9,7 @@ from pyjade.utils import process
 from django.conf import settings
 
 class Compiler(_Compiler):
-    autocloseCode = 'if,ifchanged,ifequal,ifnotequal,for,block,filter,autoescape,with,trans,blocktrans,spaceless,comment,cache,localize,compress'.split(',')
+    autocloseCode = 'if,ifchanged,ifequal,ifnotequal,for,block,filter,autoescape,with,trans,blocktrans,spaceless,comment,cache,localize,compress,verbatim'.split(',')
     useRuntime = True
 
     def __init__(self, node, **options):
@@ -59,8 +59,11 @@ class Compiler(_Compiler):
         return "{%% __pyjade_attrs %s %%}"%attrs
 
 
-from django import template
-template.add_to_builtins('pyjade.ext.django.templatetags')
+try:
+    from django.template.base import add_to_builtins
+except ImportError: # Django < 1.8
+    from django.template import add_to_builtins
+add_to_builtins('pyjade.ext.django.templatetags')
 
 from django.utils.translation import trans_real
 
@@ -72,7 +75,10 @@ except ImportError:
 def decorate_templatize(func):
     def templatize(src, origin=None):
         src = to_text(src, settings.FILE_CHARSET)
-        html = process(src,compiler=Compiler)
+        if origin.endswith(".jade"):
+            html = process(src,compiler=Compiler)
+        else:
+            html = src
         return func(html, origin)
 
     return templatize

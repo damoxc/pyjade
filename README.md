@@ -3,6 +3,8 @@
 PyJade
 ======
 
+[![Join the chat at https://gitter.im/syrusakbary/pyjade](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/syrusakbary/pyjade?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 PyJade is a high performance port of Jade-lang for python, that converts any .jade source to the each Template-language (Django, Jinja2, Mako or Tornado).
 
 
@@ -14,6 +16,11 @@ To simply output the conversion to your console:
 pyjade [-c django|jinja|mako|tornado] input.jade [output.html]
 ```
 
+or, alternatively:
+
+```console
+pyjade [-c django|jinja|mako|tornado] [-o output.html] < input.jade
+```
 
 INSTALLATION
 ============
@@ -105,7 +112,7 @@ Syntax
 ======
 
 Exactly the same as the Jade Node.js module (except of cases, which are not implemented)
-https://github.com/visionmedia/jade/blob/master/Readme.md
+https://github.com/visionmedia/jade/blob/master/README.md
 
 
 Example

@@ -1,7 +1,7 @@
 from setuptools import setup,find_packages
 
 setup(name='pyjade',
-      version='2.0.3',
+      version='3.0.0',
       download_url='git@github.com:syrusakbary/pyjade.git',
       packages=find_packages(),
       author='Syrus Akbary',
@@ -15,4 +15,12 @@ setup(name='pyjade',
       entry_points={
           'console_scripts' : ['pyjade = pyjade.convert:convert_file',]
       },
-      install_requires=['six'])
+      install_requires=['six'],
+      tests_require=[
+            'nose',
+            'django',
+            'jinja2',
+            'tornado',
+            'pyramid >= 1.4, <= 1.4.99',
+            'mako',
+      ])

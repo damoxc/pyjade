@@ -52,7 +52,7 @@ try:
     def tornado_process (src, filename):
         global loader, tornado
         template = tornado.template.Template(src,name='_.jade',loader=loader)
-        generated = template.generate()
+        generated = template.generate(missing=None)
         if isinstance(generated, six.binary_type):
             generated = generated.decode("utf-8")
         return generated
@@ -72,6 +72,9 @@ try:
         )),
         )
     )
+    import django
+    if django.VERSION >= (1, 7, 0):
+        django.setup()
     import django.template
     import django.template.loader
     from pyjade.ext.django import Compiler as DjangoCompiler
@@ -107,6 +110,10 @@ def setup_func():
     global jinja_env, processors
 
 def html_process(src, filename):
+    # hack for includes to work because of working directory
+    if 'include' in src:
+        import re
+        src = re.sub(r'((^|\n)\s*include )(?!cases/)', '\\1cases/', src)
     return pyjade.ext.html.process_jade(src)
 
 processors['Html'] = html_process
