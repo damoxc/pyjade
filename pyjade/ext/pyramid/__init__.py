@@ -40,7 +40,7 @@ def add_jade_renderer(config, extension, mako_settings_prefix='mako.'):
 
 def includeme(config):
     if not is_pyramid_mako:
-        config.add_renderer(".jade", renderer)
+        config.add_renderer(".jade", mako_templating.renderer)
     else:
         config.add_directive('add_jade_renderer', add_jade_renderer)
         config.add_jade_renderer('.jade')
