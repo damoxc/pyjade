@@ -54,6 +54,7 @@ class Compiler(_Compiler):
         self.buffer('<%%include file="%s"/>'%(path))
         self.buffer('<%%namespace file="%s" import="*"/>'%(path))
 
+
     def visitConditional(self,conditional):
         TYPE_CODE = {
             'if': lambda x: 'if %s'%x,
@@ -96,7 +97,7 @@ class Compiler(_Compiler):
         self.buf.append('\\\n% endfor\n')
 
     def attributes(self,attrs):
-        return "${%s(%s, undefined=Undefined)|n}"%(ATTRS_FUNC,attrs)
+        return "${%s(%s, undefined=Undefined) | n}"%(ATTRS_FUNC,attrs)
 
 
 

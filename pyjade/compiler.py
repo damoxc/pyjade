@@ -177,6 +177,13 @@ class Compiler(object):
             self.instring = False
 
         closed = name in self.selfClosing and not self.xml
+        if tag.text:
+            t = tag.text.nodes[0]
+            if t.startswith(u'/'):
+                if len(t) > 1:
+                    raise Exception('%s is self closing and should not have content.' % name)
+                closed = True
+
         self.buffer('<%s' % name)
         self.visitAttributes(tag.attrs)
         self.buffer('/>' if not self.terse and closed else '>')
@@ -258,7 +265,7 @@ class Compiler(object):
 
 
     def format_path(self,path):
-        has_extension = os.path.basename(path).find('.') > -1
+        has_extension = '.' in os.path.basename(path)
         if not has_extension:
             path += self.extension
         return path
